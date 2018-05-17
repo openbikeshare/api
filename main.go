@@ -31,7 +31,7 @@ var (
 
 func setup() error {
 	var err error
-	connStr := "user=Sven dbname=openbikeshare_data sslmode=disable"
+	connStr := "user=openbikshare dbname=openbikeshare_data password=N!7bV29w@jKZMt!X sslmode=disable"
 	db, err = sql.Open("postgres", connStr)
 	return err
 }
@@ -64,7 +64,7 @@ func cycleLocations(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	var cycleLocations []cycleLocation
+	cycleLocations := []cycleLocation{}
 	for rows.Next() {
 		var cycleLocation cycleLocation
 		rows.Scan(&cycleLocation.Id, &cycleLocation.Latitude, &cycleLocation.Longitude, &cycleLocation.Category, &cycleLocation.SystemId)
