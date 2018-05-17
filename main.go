@@ -20,6 +20,7 @@ type cycleLocation struct {
 	Longitude float64 `json:"longitude"`
 	Category  string  `json:"category"`
 	Updated   string  `json:"updated"`
+	SystemId  string  `json:"systemId"`
 }
 
 var (
@@ -44,7 +45,21 @@ func newPool(addr string) *redis.Pool {
 }
 
 func cycleLocations(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT id, ST_Y(location::geometry), ST_X(location::geometry), type, last_time_updated FROM cycle_location")
+	values := r.URL.Query()
+
+	swLat := values.Get("sw_lat")
+	swLng := values.Get("sw_lng")
+	neLat := values.Get("ne_lat")
+	neLng := values.Get("ne_lng")
+
+	log.Print(r.Form)
+	log.Print(swLng)
+	log.Print(swLat)
+	log.Print(neLng)
+	log.Print(neLat)
+	rows, err := db.Query(`SELECT id, ST_Y(location::geometry), ST_X(location::geometry), type, system_id
+	FROM cycle_location
+	WHERE location && ST_MakeEnvelope($1, $2, $3, $4, 4326)`, swLng, swLat, neLng, neLat)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +67,7 @@ func cycleLocations(w http.ResponseWriter, r *http.Request) {
 	var cycleLocations []cycleLocation
 	for rows.Next() {
 		var cycleLocation cycleLocation
-		rows.Scan(&cycleLocation.Id, &cycleLocation.Latitude, &cycleLocation.Longitude, &cycleLocation.Category, &cycleLocation.Updated)
+		rows.Scan(&cycleLocation.Id, &cycleLocation.Latitude, &cycleLocation.Longitude, &cycleLocation.Category, &cycleLocation.SystemId)
 		cycleLocations = append(cycleLocations, cycleLocation)
 	}
 
