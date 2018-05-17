@@ -30,7 +30,7 @@ var (
 
 func setup() error {
 	var err error
-	connStr := "user=Sven dbname=openbikeshare_data sslmode=disable"
+	connStr := "user=openbikeshare dbname=openbikeshare_data sslmode=disable"
 	db, err = sql.Open("postgres", connStr)
 	return err
 }
