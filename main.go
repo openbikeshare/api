@@ -31,7 +31,7 @@ var (
 
 func setup() error {
 	var err error
-	connStr := "user=openbikeshare dbname=openbikeshare_data sslmode=disable"
+	connStr := "user=openbikeshare dbname=openbikeshare_data password=N!7bV29w@jKZMt!X sslmode=disable"
 	db, err = sql.Open("postgres", connStr)
 	return err
 }
@@ -52,11 +52,10 @@ func cycleLocations(w http.ResponseWriter, r *http.Request) {
 	neLat := values.Get("ne_lat")
 	neLng := values.Get("ne_lng")
 
-	log.Print(r.Form)
-	log.Print(swLng)
-	log.Print(swLat)
-	log.Print(neLng)
-	log.Print(neLat)
+	if (swLat == "" || swLng == "" || neLat == "" || neLng == "") {
+                w.WriteHeader(400)
+		return
+        }
 	rows, err := db.Query(`SELECT id, ST_Y(location::geometry), ST_X(location::geometry), type, system_id
 	FROM cycle_location
 	WHERE location && ST_MakeEnvelope($1, $2, $3, $4, 4326)`, swLng, swLat, neLng, neLat)
