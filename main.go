@@ -1,4 +1,4 @@
-package main
+eackage main
 
 import (
 	"database/sql"
@@ -63,7 +63,7 @@ func cycleLocations(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	var cycleLocations []cycleLocation
+	cycleLocations := []cycleLocation{}
 	for rows.Next() {
 		var cycleLocation cycleLocation
 		rows.Scan(&cycleLocation.Id, &cycleLocation.Latitude, &cycleLocation.Longitude, &cycleLocation.Category, &cycleLocation.SystemId)
